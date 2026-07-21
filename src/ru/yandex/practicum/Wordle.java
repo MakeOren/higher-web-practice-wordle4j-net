@@ -1,5 +1,7 @@
 package ru.yandex.practicum;
 
+import java.util.List;
+
 /*
 в главном классе нам нужно:
     создать лог-файл (он должен передаваться во все классы)
@@ -13,6 +15,14 @@ public class Wordle {
 
     public static void main(String[] args) {
 
+
+        List<String> lines = WordleDictionaryLoader.load("words_ru.txt");
+
+        for (String line : lines) {
+            System.out.println(line);
+        }
+
+        System.out.println(lines.get(3));
     }
 
 }
