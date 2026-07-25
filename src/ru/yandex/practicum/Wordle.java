@@ -1,6 +1,9 @@
 package ru.yandex.practicum;
 
-import java.util.List;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
 
 /*
 в главном классе нам нужно:
@@ -13,16 +16,16 @@ import java.util.List;
  */
 public class Wordle {
 
+    private static WordleDictionary wordleDictionary;
+    private static final String PATH = "words_ru.txt";
+    private static PrintWriter log;
+
     public static void main(String[] args) {
-
-
-        List<String> lines = WordleDictionaryLoader.load("words_ru.txt");
-
-        for (String line : lines) {
-            System.out.println(line);
+        try (log = new PrintWriter( new BufferedWriter(new FileWriter("log.txt", StandardCharsets.UTF_8)))) {
+            wordleDictionary = new WordleDictionary(WordleDictionaryLoader.load(PATH));
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-
-        System.out.println(lines.get(3));
     }
 
 }
