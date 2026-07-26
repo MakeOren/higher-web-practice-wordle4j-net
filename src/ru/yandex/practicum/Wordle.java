@@ -16,15 +16,23 @@ import java.nio.charset.StandardCharsets;
  */
 public class Wordle {
 
-    private static WordleDictionary wordleDictionary;
     private static final String PATH = "words_ru.txt";
-    private static PrintWriter log;
+    private static final String PATH_LOG = "log.txt";
+
+   
 
     public static void main(String[] args) {
-        try (log = new PrintWriter( new BufferedWriter(new FileWriter("log.txt", StandardCharsets.UTF_8)))) {
-            wordleDictionary = new WordleDictionary(WordleDictionaryLoader.load(PATH));
+        PrintWriter log = null;
+        
+        try {
+            log = new PrintWriter(new BufferedWriter(new FileWriter(PATH_LOG, StandardCharsets.UTF_8)));
+            WordleDictionary wordleDictionary = new WordleDictionary(WordleDictionaryLoader.load(PATH));
         } catch (Exception e) {
-            e.printStackTrace();
+            e.printStackTrace(log);
+        } finally {
+            if (log != null) {
+                log.close();
+            }
         }
     }
 

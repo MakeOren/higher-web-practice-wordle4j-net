@@ -2,9 +2,9 @@ package ru.yandex.practicum;
 
 
 import ru.yandex.practicum.exception.EmptyDictionaryException;
+import ru.yandex.practicum.exception.WordNullException;
 
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /*
@@ -14,18 +14,40 @@ import java.util.stream.Collectors;
  */
 public class WordleDictionary {
 
-    private final List<String> dictionary;
+    private final List<String> wordsList;   // для getRandomWord() — нужен индекс
+    private final Set<String> wordsSet;
     private static final int WORD_LENGTH = 5;
+    private final Random random;
 
     public WordleDictionary(List<String> words) {
-        this.dictionary = words
+        List<String> processedWords  = words
                 .stream()
                 .map(word -> word.trim().replace("ё", "е").toLowerCase(Locale.ROOT))
                 .filter(word -> word.length() == WORD_LENGTH)
                 .collect(Collectors.toList());
 
-        if (dictionary.isEmpty()) {
+        this.wordsList = new ArrayList<>(processedWords);
+        this.wordsSet = new HashSet<>(processedWords);
+        this.random = new Random();
+
+        if (wordsList.isEmpty() || wordsSet.isEmpty()) {
             throw new EmptyDictionaryException("После фильтрации словарь пуст");
         }
+    }
+
+    public String getRandomWord() {
+        return wordsList.get(random.nextInt(wordsList.size()));
+    }
+
+    public boolean containsWord(String word) {
+        if (word == null) {
+            throw new WordNullException("В метод WordleDictionary.containsWord передано null значение");
+        }
+
+        if (word.length() != WORD_LENGTH) {
+            return false;
+        }
+
+        return wordsSet.contains(word);
     }
 }
