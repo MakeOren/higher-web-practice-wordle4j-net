@@ -98,4 +98,8 @@ public class WordleGame {
     public boolean isWin() {
         return guessed;
     }
+
+    public String getAnswer() {
+        return answer;
+    }
 }

@@ -14,9 +14,12 @@ import java.util.stream.Collectors;
  */
 public class WordleDictionary {
 
-    private final List<String> wordsList;   // для getRandomWord() — нужен индекс
+    private final List<String> wordsList;
+    // для getRandomWord() — нужен индекс
     private final Set<String> wordsSet;
+
     private static final int WORD_LENGTH = 5;
+
     private final Random random;
 
     public WordleDictionary(List<String> words) {
