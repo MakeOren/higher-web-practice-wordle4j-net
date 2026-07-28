@@ -53,4 +53,8 @@ public class WordleDictionary {
 
         return wordsSet.contains(word);
     }
+
+    public List<String> getAllWords() {
+        return new ArrayList<>(wordsList);
+    }
 }

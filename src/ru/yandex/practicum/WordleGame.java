@@ -1,9 +1,6 @@
 package ru.yandex.practicum;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /*
 в этом классе хранится словарь и состояние игры
@@ -33,12 +30,16 @@ public class WordleGame {
 
     }
 
+    private record HintContext(Set<Character> excluded, Set<Character> included, Map<Integer,Character> fixed) {
+
+    }
+
     public WordleGame(WordleDictionary dictionary) {
         this.dictionary = dictionary;
         this.answer = dictionary.getRandomWord();
         this.steps = 6;
         this.guessed = false;
-        history = new ArrayList<>();
+        this.history = new ArrayList<>();
     }
 
     private String checkGuess(String guess) {
@@ -101,5 +102,71 @@ public class WordleGame {
 
     public String getAnswer() {
         return answer;
+    }
+
+    public String getSuggestion() {
+        Random random = new Random();
+        HintContext hintContext = analyzeHistory();
+        List<String> words = dictionary.getAllWords();
+        List<String> candidates = new ArrayList<>();
+
+        Set<Character> included = hintContext.included;
+        Set<Character> excluded = hintContext.excluded;
+        Map<Integer, Character> fixed =  hintContext.fixed;
+
+        outerLoop:
+        for (String word : words) {
+            for (Character character : excluded) {
+                if (word.contains(character.toString())) {
+                    continue outerLoop;
+                }
+            }
+
+            for (Character character : included) {
+                if (!word.contains(character.toString())) {
+                    continue outerLoop;
+                }
+            }
+
+            for (Map.Entry<Integer, Character> integerCharacterEntry : fixed.entrySet()) {
+                if (!(word.contains(integerCharacterEntry.getValue().toString()) && word.indexOf(integerCharacterEntry.getValue().toString()) == integerCharacterEntry.getKey())) {
+                    continue outerLoop;
+                }
+            }
+
+            for (Attempt attempt : history) {
+                if (attempt.word.equals(word)) {
+                    continue outerLoop;
+                }
+            }
+
+            candidates.add(word);
+        }
+
+        return candidates.get(random.nextInt(candidates.size()));
+    }
+
+    private HintContext analyzeHistory() {
+        Set<Character> included = new HashSet<>();
+        Set<Character> excluded = new HashSet<>();
+        Map<Integer, Character> fixed = new HashMap<>();
+
+        for (Attempt attempt : history) {
+            String word = attempt.word;
+            String hint = attempt.hint;
+            for (int i = 0; i < word.length(); i++) {
+                if (hint.charAt(i) == '+') {
+                    fixed.put(i,word.charAt(i));
+                }
+
+                if (hint.charAt(i) == '^') {
+                    included .add(word.charAt(i));
+                } else if(hint.charAt(i) != '+'){
+                    excluded.add(word.charAt(i));
+                }
+            }
+        }
+
+        return new HintContext(excluded, included, fixed);
     }
 }
