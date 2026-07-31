@@ -1,5 +1,7 @@
 package ru.yandex.practicum;
 
+import ru.yandex.practicum.exception.NoSuggestionAvailableException;
+
 import java.util.*;
 
 /*
@@ -26,6 +28,8 @@ public class WordleGame {
 
     private boolean guessed;
 
+    private final Random random;
+
     private record Attempt(String word, String hint) {
 
     }
@@ -40,6 +44,7 @@ public class WordleGame {
         this.steps = 6;
         this.guessed = false;
         this.history = new ArrayList<>();
+        this.random = new Random();
     }
 
     private String checkGuess(String guess) {
@@ -105,7 +110,6 @@ public class WordleGame {
     }
 
     public String getSuggestion() {
-        Random random = new Random();
         HintContext hintContext = analyzeHistory();
         List<String> words = dictionary.getAllWords();
         List<String> candidates = new ArrayList<>();
@@ -116,20 +120,22 @@ public class WordleGame {
 
         outerLoop:
         for (String word : words) {
-            for (Character character : excluded) {
-                if (word.contains(character.toString())) {
-                    continue outerLoop;
-                }
+            Set<Character> wordChars = new HashSet<>();
+
+            for (char c : word.toCharArray()) {
+                wordChars.add(c);
             }
 
-            for (Character character : included) {
-                if (!word.contains(character.toString())) {
-                    continue outerLoop;
-                }
+            if (!Collections.disjoint(wordChars, excluded)) {
+                continue outerLoop;
+            }
+
+            if (!wordChars.containsAll(included)) {
+                continue outerLoop;
             }
 
             for (Map.Entry<Integer, Character> integerCharacterEntry : fixed.entrySet()) {
-                if (!(word.contains(integerCharacterEntry.getValue().toString()) && word.indexOf(integerCharacterEntry.getValue().toString()) == integerCharacterEntry.getKey())) {
+                if (!(word.charAt(integerCharacterEntry.getKey()) == integerCharacterEntry.getValue())) {
                     continue outerLoop;
                 }
             }
@@ -141,6 +147,10 @@ public class WordleGame {
             }
 
             candidates.add(word);
+        }
+
+        if (candidates.isEmpty()) {
+            throw new NoSuggestionAvailableException("Коллекция с подсказками неожиданно пуста");
         }
 
         return candidates.get(random.nextInt(candidates.size()));

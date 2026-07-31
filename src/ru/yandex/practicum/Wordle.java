@@ -38,6 +38,13 @@ public class Wordle {
             while (true) {
                 try {
                     String word = scanner.nextLine();
+
+                    if (word.trim().isEmpty()) {
+                        System.out.println("Потенциальный ответ: " + wordleGame.getSuggestion());
+                        System.out.println("Введите слово размером пять символов:");
+                        continue;
+                    }
+
                     if (!wordleDictionary.containsWord(word)) {
                         throw new WordNotFoundDictionaryException("Слово не найдено в словаре");
                     }
