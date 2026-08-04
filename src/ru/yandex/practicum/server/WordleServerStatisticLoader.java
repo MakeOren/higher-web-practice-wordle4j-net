@@ -1,11 +1,11 @@
-package ru.yandex.practicum;
+package ru.yandex.practicum.server;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import ru.yandex.practicum.exception.StatisticsLoadException;
 import ru.yandex.practicum.exception.StatisticsSaveException;
-import ru.yandex.practicum.model.PlayerStats;
+import ru.yandex.practicum.server.model.PlayerStats;
 
 import java.io.*;
 import java.lang.reflect.Type;
@@ -22,7 +22,9 @@ public class WordleServerStatisticLoader {
     private static final String STATISTICS_PATH = "statistics.json";
 
     static {
-        gson = new GsonBuilder().create();
+        gson = new GsonBuilder()
+                .setPrettyPrinting()
+                .create();
     }
 
     public static Map<String, PlayerStats> loadStatistics() {
@@ -42,6 +44,10 @@ public class WordleServerStatisticLoader {
             }
         } catch (IOException e) {
             throw new StatisticsLoadException("Ошибка при загрузки статистики",e);
+        }
+
+        if (stringBuilderMap.isEmpty()) {
+            return new HashMap<>();
         }
 
         Type playerStatsMapType = new TypeToken<Map<String, PlayerStats>>(){}.getType();

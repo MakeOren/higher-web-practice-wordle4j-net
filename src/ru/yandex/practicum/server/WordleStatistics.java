@@ -1,7 +1,7 @@
-package ru.yandex.practicum;
+package ru.yandex.practicum.server;
 
-import ru.yandex.practicum.model.Game;
-import ru.yandex.practicum.model.PlayerStats;
+import ru.yandex.practicum.server.model.Game;
+import ru.yandex.practicum.server.model.PlayerStats;
 
 import java.util.*;
 
@@ -15,7 +15,7 @@ public class WordleStatistics {
 
     private final Map<String, PlayerStats> statistics;
 
-    WordleStatistics(Map<String, PlayerStats> statistics) {
+    public WordleStatistics(Map<String, PlayerStats> statistics) {
         this.statistics = statistics;
     }
 
@@ -24,7 +24,7 @@ public class WordleStatistics {
 
         if (statistics.containsKey(nickname)) {
             PlayerStats playerStats = statistics.get(nickname);
-            List<Game> updateGameList = new ArrayList<>(playerStats.games());
+            List<Game> updateGameList = new ArrayList<>(playerStats.getGames());
 
             updateGameList.add(game);
             statistics.put(nickname, new PlayerStats(nickname, updateGameList));
@@ -38,14 +38,17 @@ public class WordleStatistics {
     }
 
     public Collection<LeaderboardEntry> getLeaderboard() {
-        List<LeaderboardEntry> leaderboardEntryList = statistics.values()
+        return statistics.values()
                 .stream()
-                .sorted(Comparator.comparingInt((PlayerStats playerStats)-> playerStats.games().size()).reversed())
-                .map((playerStats -> new LeaderboardEntry(playerStats.nickname(), playerStats.games().size())))
+                .sorted(Comparator.comparingInt((PlayerStats playerStats)-> playerStats.getGames().size()).reversed())
+                .map((playerStats -> new LeaderboardEntry(playerStats.getNickname(), playerStats.getGames().size())))
                 .limit(LEADER_BOARD_COUNT)
                 .toList();
+    }
 
-        return leaderboardEntryList;
+    public boolean  isPlayerOnLeaderBoard(String name, List<WordleStatistics.LeaderboardEntry> leaderboardEntries) {
+        return leaderboardEntries.stream()
+                .anyMatch(leaderboardEntry -> leaderboardEntry.nickname.equals(name));
     }
 
     public PlayerStats getPlayerStats(String nickname) {

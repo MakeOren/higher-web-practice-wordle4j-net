@@ -3,9 +3,10 @@ package ru.yandex.practicum.server.handler;
 import com.google.gson.Gson;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
-import ru.yandex.practicum.WordleStatistics;
+import ru.yandex.practicum.server.WordleServerStatisticLoader;
+import ru.yandex.practicum.server.WordleStatistics;
 import ru.yandex.practicum.exception.InvalidQueryParameterException;
-import ru.yandex.practicum.model.PlayerStats;
+import ru.yandex.practicum.server.model.PlayerStats;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -33,12 +34,15 @@ public class WordleStatisticsHandler extends BaseHttpHandler implements HttpHand
                 getStatistics(exchange, path);
             } else if (method.equals("POST") && path.matches("^/statistics/[a-zA-Z0-9._-]{1,50}$")) {
                 addResult(exchange,path,query);
+            } else {
+                sendNotFound(exchange);
             }
 
         } catch (InvalidQueryParameterException e) {
             sendBadRequest(exchange);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
+            sendInternalError(exchange);
         }
     }
 
@@ -46,16 +50,13 @@ public class WordleStatisticsHandler extends BaseHttpHandler implements HttpHand
         String name = extractName(path);
         Map<String, String> stepsAndUsedHints = extractStepsAndUsedHints(query);
 
-        if (stepsAndUsedHints == null || stepsAndUsedHints.isEmpty()) {
-            throw new InvalidQueryParameterException("Переданы некорректные параметры steps или usedhints");
-        }
+        boolean usedHints =  parseUsedHints(stepsAndUsedHints.get("usedhints"));
+        int steps = parseSteps(stepsAndUsedHints.get("steps"));
 
-        if (!(stepsAndUsedHints.get("steps") == null || stepsAndUsedHints.get("steps").matches("//d"))) {
-            throw new InvalidQueryParameterException("Переданы некорректные параметры steps или usedhints");
-        }
+        wordleStatistics.addResult(name, steps, usedHints);
+        WordleServerStatisticLoader.saveStatistics(wordleStatistics.getAllStats());
 
-        wordleStatistics.addResult(name, steps, UsedHints);
-        sendText(exchange, String.format("Результат игрока %s успешно добавлен", name), HttpStatusCode.OK.getCode());
+        sendText(exchange, gson.toJson(String.format("Результат игрока %s успешно добавлен", name)), HttpStatusCode.OK.getCode());
     }
 
     private void getStatistics(HttpExchange exchange,String path) throws IOException {
@@ -64,8 +65,8 @@ public class WordleStatisticsHandler extends BaseHttpHandler implements HttpHand
         PlayerStats playerStats = wordleStatistics.getPlayerStats(name);
         List<WordleStatistics.LeaderboardEntry> leaderboard = new ArrayList<>(wordleStatistics.getLeaderboard());
 
-        if (playerStats != null) {
-            leaderboard.add(new WordleStatistics.LeaderboardEntry(playerStats.nickname(), playerStats.games().size()));
+        if (playerStats != null && !wordleStatistics.isPlayerOnLeaderBoard(name, leaderboard)) {
+            leaderboard.add(new WordleStatistics.LeaderboardEntry(playerStats.getNickname(), playerStats.getGames().size()));
         }
 
         String json = gson.toJson(leaderboard);
