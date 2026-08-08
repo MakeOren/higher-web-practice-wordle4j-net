@@ -30,6 +30,10 @@ public class WordleGame {
 
     private final Random random;
 
+    private boolean usedHints = false;
+
+    private static final int STEP_MAX = 6;
+
     private record Attempt(String word, String hint) {
 
     }
@@ -41,10 +45,14 @@ public class WordleGame {
     public WordleGame(WordleDictionary dictionary) {
         this.dictionary = dictionary;
         this.answer = dictionary.getRandomWord();
-        this.steps = 6;
+        this.steps = STEP_MAX;
         this.guessed = false;
         this.history = new ArrayList<>();
         this.random = new Random();
+    }
+
+    public boolean isUsedHints() {
+        return usedHints;
     }
 
     private String checkGuess(String guess) {
@@ -153,6 +161,7 @@ public class WordleGame {
             throw new NoSuggestionAvailableException("Коллекция с подсказками неожиданно пуста");
         }
 
+        usedHints = true;
         return candidates.get(random.nextInt(candidates.size()));
     }
 

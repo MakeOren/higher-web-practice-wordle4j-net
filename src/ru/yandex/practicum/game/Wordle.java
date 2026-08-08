@@ -23,8 +23,6 @@ public class Wordle {
     private static final String PATH_LOG = "log.txt";
     private static final int STEP_MAX = 6;
 
-   
-
     public static void main(String[] args) {
         PrintWriter log = null;
         Scanner scanner = new Scanner(System.in);
