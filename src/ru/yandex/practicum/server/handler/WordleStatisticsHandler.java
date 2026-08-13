@@ -30,9 +30,9 @@ public class WordleStatisticsHandler extends BaseHttpHandler implements HttpHand
         String query = exchange.getRequestURI().getQuery();
 
         try {
-            if (method.equals("GET") && path.matches("^/statistics/[a-zA-Z0-9._-]{1,50}$")) {
+            if (method.equals("GET") && path.matches("^/statistics/[а-яА-ЯёЁa-zA-Z0-9._-]{1,50}$")) {
                 getStatistics(exchange, path);
-            } else if (method.equals("POST") && path.matches("^/statistics/[a-zA-Z0-9._-]{1,50}$")) {
+            } else if (method.equals("POST") && path.matches("^/statistics/[а-яА-ЯёЁa-zA-Z0-9._-]{1,50}$")) {
                 addResult(exchange,path,query);
             } else {
                 sendNotFound(exchange);

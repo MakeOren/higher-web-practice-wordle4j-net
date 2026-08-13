@@ -158,7 +158,7 @@ public class WordleGame {
         }
 
         if (candidates.isEmpty()) {
-            throw new NoSuggestionAvailableException("Коллекция с подсказками неожиданно пуста");
+            throw new NoSuggestionAvailableException("Коллекция с подсказками неожиданно пуста" + getAnswer());
         }
 
         usedHints = true;
@@ -179,7 +179,7 @@ public class WordleGame {
                 }
 
                 if (hint.charAt(i) == '^') {
-                    included .add(word.charAt(i));
+                    included.add(word.charAt(i));
                 } else if(hint.charAt(i) != '+'){
                     excluded.add(word.charAt(i));
                 }

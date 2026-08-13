@@ -11,6 +11,7 @@ import ru.yandex.practicum.game.model.LeaderboardEntry;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
@@ -21,23 +22,28 @@ import java.util.List;
 public class WordleStatisticsClient {
     private final HttpClient httpClient;
     private final Gson gson;
-    private static final String ADDRESS = "http://localhost:8080/statistics";
+    private static final int PORT = 8080;
+    private static final String SCHEME = "http";
+    private static final String HOST = "localhost";
+    private static final String PATH = "/statistics/";
 
     public WordleStatisticsClient() {
         this.gson = new GsonBuilder().create();
         this.httpClient = HttpClient.newHttpClient();
     }
 
-    public static void main(String[] args) {
-        WordleStatisticsClient wordleStatisticsClient = new WordleStatisticsClient();
-        List<LeaderboardEntry> g = new ArrayList<>(wordleStatisticsClient.getStatistics("ruslan3"));
-        for (LeaderboardEntry leaderboardEntry : g) {
-            System.out.println(leaderboardEntry.getNickname());
-        }
-
-        wordleStatisticsClient.sendResult("Ruslan", 4, true);
-
-    }
+//    public static void main(String[] args) {
+//        WordleStatisticsClient wordleStatisticsClient = new WordleStatisticsClient();
+//
+//        wordleStatisticsClient.sendResult("Руслан_Иванов", 4, true);
+//
+//        List<LeaderboardEntry> g = new ArrayList<>(wordleStatisticsClient.getStatistics("ruslan3"));
+//        for (LeaderboardEntry leaderboardEntry : g) {
+//            System.out.println(leaderboardEntry.getNickname());
+//        }
+//
+//
+//    }
 
     public void sendResult(String nickname, int steps, boolean usedHints) {
         HttpResponse<String> response;
@@ -47,13 +53,14 @@ public class WordleStatisticsClient {
         }
 
         try {
-            String requestString = String.format("%s/%s?steps=%d&usedhints=%b",ADDRESS, nickname ,steps, usedHints);
+            URI uri = getUri(nickname, steps, usedHints);
+
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(requestString))
+                    .uri(uri)
                     .POST(HttpRequest.BodyPublishers.noBody())
                     .build();
             response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-        } catch (IOException | InterruptedException e) {
+        } catch (IOException | InterruptedException | URISyntaxException e) {
             throw new StatisticsSubmissionFailedException("Не удалось отправить статистику на сервер");
         }
 
@@ -68,13 +75,14 @@ public class WordleStatisticsClient {
         }
 
         try {
-            String requestString = String.format("%s/%s",ADDRESS, nickname);
+            URI uri = getUri(nickname);
+
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(requestString))
+                    .uri(uri)
                     .GET()
                     .build();
             response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-        } catch (IOException | InterruptedException e) {
+        } catch (IOException | InterruptedException | URISyntaxException e) {
             throw new StatisticsSubmissionFailedException("Не удалось получить статистику от сервера");
         }
 
@@ -93,5 +101,15 @@ public class WordleStatisticsClient {
         if (!(response.statusCode() >= 200 && response.statusCode() < 300)) {
             throw new ApiException("Получен отрицательный статус: " + response.statusCode());
         }
+    }
+
+    private static URI getUri(String nickname) throws URISyntaxException {
+        return new URI(SCHEME,null, HOST, PORT, PATH + nickname, null, null);
+    }
+
+    private static URI getUri(String nickname, int steps, boolean usedHints) throws URISyntaxException {
+        String query = String.format("steps=%d&usedhints=%b", steps, usedHints);
+
+        return new URI(SCHEME,null, HOST, PORT, PATH + nickname, query, null);
     }
 }
