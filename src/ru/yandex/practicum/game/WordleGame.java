@@ -180,10 +180,18 @@ public class WordleGame {
 
                 if (hint.charAt(i) == '^') {
                     included.add(word.charAt(i));
-                } else if(hint.charAt(i) != '+'){
+                } else if(hint.charAt(i) != '+') {
                     excluded.add(word.charAt(i));
                 }
             }
+        }
+
+        for (Map.Entry<Integer, Character> integerCharacterEntry : fixed.entrySet()) {
+            excluded.remove(integerCharacterEntry.getValue());
+        }
+
+        for (Character character : included) {
+            excluded.remove(character);
         }
 
         return new HintContext(excluded, included, fixed);

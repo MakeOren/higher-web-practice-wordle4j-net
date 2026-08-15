@@ -30,4 +30,12 @@ class WordleGameTest {
             System.out.println(wordleGame.getSuggestion());
         }
     }
+
+    @Test
+    void should2() {
+        for (int i = 0; i < 1; i++) {
+            wordleGame.makeMove("шевре");
+            System.out.println(wordleGame.getSuggestion());
+        }
+    }
 }
