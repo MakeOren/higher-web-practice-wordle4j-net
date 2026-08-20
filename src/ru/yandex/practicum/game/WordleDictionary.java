@@ -25,7 +25,7 @@ public class WordleDictionary {
     public WordleDictionary(List<String> words) {
         List<String> processedWords  = words
                 .stream()
-                .map(word -> word.trim().replace("ё", "е").toLowerCase(Locale.ROOT))
+                .map(word -> word.trim().toLowerCase(Locale.ROOT).replace("ё", "е"))
                 .filter(word -> word.length() == WORD_LENGTH)
                 .collect(Collectors.toList());
 

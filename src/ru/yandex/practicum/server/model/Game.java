@@ -1,5 +1,7 @@
 package ru.yandex.practicum.server.model;
 
+import java.util.Objects;
+
 public class Game {
     private final int stepCount;
     private final boolean isSuggestionUsed;
@@ -15,6 +17,18 @@ public class Game {
 
     public boolean isSuggestionUsed() {
         return isSuggestionUsed;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Game game = (Game) o;
+        return stepCount == game.stepCount && isSuggestionUsed == game.isSuggestionUsed;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(stepCount, isSuggestionUsed);
     }
 }
 

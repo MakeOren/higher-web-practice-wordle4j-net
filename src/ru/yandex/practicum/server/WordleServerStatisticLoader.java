@@ -19,7 +19,6 @@ import java.util.Map;
 public class WordleServerStatisticLoader {
 
     private static final Gson gson;
-    private static final String STATISTICS_PATH = "statistics.json";
 
     static {
         gson = new GsonBuilder()
@@ -27,15 +26,15 @@ public class WordleServerStatisticLoader {
                 .create();
     }
 
-    public static Map<String, PlayerStats> loadStatistics() {
-        File file = new File(STATISTICS_PATH);
+    public static Map<String, PlayerStats> loadStatistics(String path) {
+        File file = new File(path);
 
         if (!file.exists()) {
             return new HashMap<>();
         }
         StringBuilder stringBuilderMap = new StringBuilder();
 
-        try (BufferedReader bufferedReader = new BufferedReader(new FileReader(STATISTICS_PATH, StandardCharsets.UTF_8))) {
+        try (BufferedReader bufferedReader = new BufferedReader(new FileReader(path, StandardCharsets.UTF_8))) {
             String line = bufferedReader.readLine();
 
             while (line != null) {
@@ -54,8 +53,8 @@ public class WordleServerStatisticLoader {
         return gson.fromJson(stringBuilderMap.toString(), playerStatsMapType);
     }
 
-    public static void saveStatistics(Map<String, PlayerStats> playerStatsMap) {
-        try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(STATISTICS_PATH, StandardCharsets.UTF_8))) {
+    public static void saveStatistics(Map<String, PlayerStats> playerStatsMap, String path) {
+        try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(path, StandardCharsets.UTF_8))) {
 
             String json = gson.toJson(playerStatsMap);
             bufferedWriter.write(json);

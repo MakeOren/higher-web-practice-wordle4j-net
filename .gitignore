@@ -9,6 +9,7 @@ log.txt
 # BlueJ files
 *.ctxt
 statistics.json
+statistics_test.json
 
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/

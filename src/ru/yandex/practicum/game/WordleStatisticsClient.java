@@ -15,7 +15,6 @@ import java.net.URISyntaxException;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -31,19 +30,6 @@ public class WordleStatisticsClient {
         this.gson = new GsonBuilder().create();
         this.httpClient = HttpClient.newHttpClient();
     }
-
-//    public static void main(String[] args) {
-//        WordleStatisticsClient wordleStatisticsClient = new WordleStatisticsClient();
-//
-//        wordleStatisticsClient.sendResult("Руслан_Иванов", 4, true);
-//
-//        List<LeaderboardEntry> g = new ArrayList<>(wordleStatisticsClient.getStatistics("ruslan3"));
-//        for (LeaderboardEntry leaderboardEntry : g) {
-//            System.out.println(leaderboardEntry.getNickname());
-//        }
-//
-//
-//    }
 
     public void sendResult(String nickname, int steps, boolean usedHints) {
         HttpResponse<String> response;

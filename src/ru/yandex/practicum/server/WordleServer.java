@@ -14,10 +14,11 @@ public class WordleServer {
     private static final int PORT = 8080;
     private static final Gson gson;
     private static final WordleStatistics wordleStatistics;
+    private static final String STATISTICS_PATH = "statistics.json";
 
     static {
         gson = new Gson();
-        wordleStatistics = new WordleStatistics(WordleServerStatisticLoader.loadStatistics());
+        wordleStatistics = new WordleStatistics(WordleServerStatisticLoader.loadStatistics(STATISTICS_PATH));
     }
 
     public static void main(String[] args) {
@@ -31,7 +32,7 @@ public class WordleServer {
 
             httpServer.bind(new InetSocketAddress(PORT), 0);
 
-            httpServer.createContext("/statistics", new WordleStatisticsHandler(wordleStatistics, gson));
+            httpServer.createContext("/statistics", new WordleStatisticsHandler(wordleStatistics, gson, STATISTICS_PATH));
 
             httpServer.start();
             System.out.println("HTTP-сервер запущен на " + PORT + " порту!");
