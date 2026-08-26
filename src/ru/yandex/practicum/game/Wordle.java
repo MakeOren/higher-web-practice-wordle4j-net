@@ -1,6 +1,5 @@
 package ru.yandex.practicum.game;
 
-import org.junit.jupiter.params.provider.CsvSource;
 import ru.yandex.practicum.exception.ApiException;
 import ru.yandex.practicum.exception.NicknameNullException;
 import ru.yandex.practicum.exception.StatisticsSubmissionFailedException;
