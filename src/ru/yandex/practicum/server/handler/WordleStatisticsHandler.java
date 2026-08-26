@@ -17,12 +17,12 @@ public class WordleStatisticsHandler extends BaseHttpHandler implements HttpHand
 
     private final WordleStatistics wordleStatistics;
     private final Gson gson;
-    private final String path;
+    private final String statisticsPath;
 
-    public WordleStatisticsHandler(WordleStatistics wordleStatistics, Gson gson, String path) {
+    public WordleStatisticsHandler(WordleStatistics wordleStatistics, Gson gson, String statisticsPath) {
         this.wordleStatistics = wordleStatistics;
         this.gson = gson;
-        this.path = path;
+        this.statisticsPath = statisticsPath;
     }
 
     @Override
@@ -56,7 +56,7 @@ public class WordleStatisticsHandler extends BaseHttpHandler implements HttpHand
         int steps = parseSteps(stepsAndUsedHints.get("steps"));
 
         wordleStatistics.addResult(name, steps, usedHints);
-        WordleServerStatisticLoader.saveStatistics(wordleStatistics.getAllStats(), path);
+        WordleServerStatisticLoader.saveStatistics(wordleStatistics.getAllStats(), statisticsPath);
 
         sendText(exchange, gson.toJson(String.format("Результат игрока %s успешно добавлен", name)), HttpStatusCode.OK.getCode());
     }

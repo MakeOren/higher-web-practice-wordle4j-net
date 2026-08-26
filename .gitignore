@@ -10,6 +10,7 @@ log.txt
 *.ctxt
 statistics.json
 statistics_test.json
+test_words.txt
 
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/
